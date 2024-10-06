@@ -14,6 +14,7 @@ import (
 func RegisterUser(ctx *gin.Context) {
 	db := database.GetDB()
 	User := models.User{}
+	Role := models.Role{}
 
 	reqHeaders := helpers.GetRequestHeaders(ctx)
 	if reqHeaders.ContentType == "application/json" {
@@ -23,7 +24,6 @@ func RegisterUser(ctx *gin.Context) {
 	}
 
 	err := db.Debug().Create(&User).Error
-
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
@@ -33,10 +33,21 @@ func RegisterUser(ctx *gin.Context) {
 		return
 	}
 
+	roleErr := db.Where("id = ?", User.RoleID).First(&Role).Error
+	if roleErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"error":   "Invalid Role",
+			"message": "The specified role does not exist",
+		})
+		return
+	}
+
 	ctx.JSON(http.StatusCreated, gin.H{
 		"id":        User.ID,
 		"email":     User.Email,
 		"user_name": User.UserName,
+		"role":      Role.RoleName,
 	})
 }
 
@@ -53,7 +64,6 @@ func LoginUser(ctx *gin.Context) {
 
 	password := User.Password
 	err := db.Debug().Where("email = ? ", User.Email).Take(&User).Error
-
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"code":    http.StatusUnauthorized,
@@ -73,8 +83,16 @@ func LoginUser(ctx *gin.Context) {
 		return
 	}
 
-	token, err := helpers.GenerateToken(User.ID)
+	if User.RoleID != 1 {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+			"code":    http.StatusForbidden,
+			"error":   "Forbidden",
+			"message": "You do not have permission to access authentication",
+		})
+		return
+	}
 
+	token, err := helpers.GenerateToken(User.ID)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"code":    http.StatusInternalServerError,
@@ -83,6 +101,7 @@ func LoginUser(ctx *gin.Context) {
 		})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"token": token,
 	})

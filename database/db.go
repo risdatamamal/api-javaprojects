@@ -33,6 +33,8 @@ func StartDB() error {
 	// models.SocialMedia{}
 	)
 
+	models.SeedRoles(db)
+
 	return nil
 }
 
