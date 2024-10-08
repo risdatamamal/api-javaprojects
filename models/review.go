@@ -15,8 +15,8 @@ type Review struct {
 	User      *User
 }
 
-func (p *Review) BeforeCreate(tx *gorm.DB) error {
-	_, err := govalidator.ValidateStruct(p)
+func (r *Review) BeforeCreate(tx *gorm.DB) error {
+	_, err := govalidator.ValidateStruct(r)
 	if err != nil {
 		return err
 	}

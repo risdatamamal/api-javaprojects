@@ -18,7 +18,8 @@ func GenerateToken(id int) (string, error) {
 
 	parseToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signedToken, err := parseToken.SignedString([]byte(config.SECRET_KEY))
+	conf := config.LoadConfig()
+	signedToken, err := parseToken.SignedString([]byte(conf.SecretKey))
 	if err != nil {
 		return "", err
 	}
@@ -35,12 +36,14 @@ func VerifyToken(ctx *gin.Context) (interface{}, error) {
 
 	stringToken := strings.Split(headerToken, " ")[1]
 
+	conf := config.LoadConfig()
 	token, err := jwt.Parse(stringToken, func(t *jwt.Token) (interface{}, error) {
 		_, ok := t.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
 			return nil, errors.New("failed to parse token, expected jwt.SigningMethodHMAC")
 		}
-		return []byte(config.SECRET_KEY), nil
+
+		return []byte(conf.SecretKey), nil
 	})
 
 	if err != nil {

@@ -16,21 +16,20 @@ var (
 )
 
 func StartDB() error {
-	conn := fmt.Sprintf("host=%s  user=%s password=%s dbname=%s port=%d sslmode=disable", config.HOST, config.USERNAME, config.PASSWORD, config.DB_NAME, config.PORT)
+	conf := config.LoadConfig()
+	conn := fmt.Sprintf("host=%s  user=%s password=%s dbname=%s port=%d sslmode=disable", conf.Host, conf.Username, conf.Password, conf.DBName, conf.Port)
 	db, err = gorm.Open(postgres.Open(conn), &gorm.Config{})
 
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Successfully Connected to Database: ", config.DB_NAME)
+	fmt.Println("Successfully Connected to Database: ", conf.DBName)
 
 	db.Debug().AutoMigrate(
 		models.User{},
 		models.Role{},
-	// models.Photo{},
-	// models.Comment{},
-	// models.SocialMedia{}
+	// models.Review{},
 	)
 
 	models.SeedRoles(db)

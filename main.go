@@ -11,11 +11,12 @@ import (
 func main() {
 	r := router.StartApp()
 	err := database.StartDB()
+	conf := config.LoadConfig()
 
 	if err != nil {
 		fmt.Println("Error starting database: ", err)
 		return
 	}
 
-	r.Run(config.SERVER_PORT)
+	r.Run(conf.ServerPort)
 }

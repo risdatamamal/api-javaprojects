@@ -13,8 +13,8 @@ type Role struct {
 	GuardName string `gorm:"not null" json:"guard_name" form:"guard_name" valid:"required~Guard name is required"`
 }
 
-func (u *Role) BeforeCreate(tx *gorm.DB) error {
-	_, err := govalidator.ValidateStruct(u)
+func (r *Role) BeforeCreate(tx *gorm.DB) error {
+	_, err := govalidator.ValidateStruct(r)
 	if err != nil {
 		return err
 	}

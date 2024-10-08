@@ -23,7 +23,7 @@ func RegisterUser(ctx *gin.Context) {
 		ctx.ShouldBind(&User)
 	}
 
-	err := db.Debug().Create(&User).Error
+	err := db.Debug().Preload("Role").Create(&User).Error
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
@@ -43,11 +43,23 @@ func RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{
+	var users []map[string]interface{}
+	RoleName := ""
+	if User.Role != nil {
+		RoleName = User.Role.RoleName
+	} else {
+		RoleName = Role.RoleName
+	}
+
+	users = append(users, gin.H{
 		"id":        User.ID,
-		"email":     User.Email,
 		"user_name": User.UserName,
-		"role":      Role.RoleName,
+		"email":     User.Email,
+		"role":      RoleName,
+	})
+
+	ctx.JSON(http.StatusCreated, gin.H{
+		"users": users,
 	})
 }
 
@@ -63,7 +75,7 @@ func LoginUser(ctx *gin.Context) {
 	}
 
 	password := User.Password
-	err := db.Debug().Where("email = ? ", User.Email).Take(&User).Error
+	err := db.Debug().Preload("Role").Where("email = ? ", User.Email).Take(&User).Error
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"code":    http.StatusUnauthorized,
@@ -92,7 +104,7 @@ func LoginUser(ctx *gin.Context) {
 		return
 	}
 
-	token, err := helpers.GenerateToken(User.ID)
+	access_token, err := helpers.GenerateToken(User.ID)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"code":    http.StatusInternalServerError,
@@ -102,7 +114,16 @@ func LoginUser(ctx *gin.Context) {
 		return
 	}
 
+	var users []map[string]interface{}
+	users = append(users, gin.H{
+		"id":        User.ID,
+		"user_name": User.UserName,
+		"email":     User.Email,
+		"role":      User.Role.RoleName,
+	})
+
 	ctx.JSON(http.StatusOK, gin.H{
-		"token": token,
+		"users":        users,
+		"access_token": access_token,
 	})
 }

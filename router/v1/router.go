@@ -17,6 +17,7 @@ func StartApp() *gin.Engine {
 			userRouter.POST("/register", controller.RegisterUser)
 			userRouter.POST("/login", controller.LoginUser)
 			userRouter.Use(middleware.Authentication(), middleware.Authorization("userId"))
+			// userRouter.PUT("/:userId", controller.UpdateUser)
 		}
 
 		// photoRouter := apiRouter.Group("/photos")
