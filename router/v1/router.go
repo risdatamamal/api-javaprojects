@@ -12,23 +12,41 @@ func StartApp() *gin.Engine {
 
 	apiRouter := r.Group("/api/v1")
 	{
-		userRouter := apiRouter.Group("/users")
+		// blogRouter := apiRouter.Group("/blogs")
+		// {
+		// 	blogRouter.GET("/", controller.GetBlogList)
+		// }
+
+		// headerRouter := apiRouter.Group("/headers")
+		// {
+		// 	headerRouter.GET("/", controller.GetHeaderList)
+		// }
+
+		authRouter := apiRouter.Group("/auths")
 		{
-			userRouter.POST("/register", controller.RegisterUser)
-			userRouter.POST("/login", controller.LoginUser)
-			userRouter.Use(middleware.Authentication(), middleware.Authorization("userId"))
-			// userRouter.PUT("/:userId", controller.UpdateUser)
+			// authRouter.POST("/register", controller.RegisterUser)
+			authRouter.POST("/login", controller.LoginUser)
 		}
 
-		// photoRouter := apiRouter.Group("/photos")
-		// {
-		// 	photoRouter.Use(middleware.Authentication())
-		// 	photoRouter.POST("/", controller.PostPhoto)
-		// 	photoRouter.GET("/", controller.GetPhotos)
-		// 	photoRouter.Use(middleware.Authorization("photoId"))
-		// 	photoRouter.PUT("/:photoId", controller.UpdatePhoto)
-		// 	photoRouter.DELETE("/:photoId", controller.DeletePhoto)
-		// }
+		cmsRouter := apiRouter.Group("/admin")
+		{
+			userRouter := cmsRouter.Group("/users")
+			{
+				userRouter.Use(middleware.Authentication(), middleware.Authorization("userId"))
+				// userRouter.GET("/", controller.GetProfile)
+				// userRouter.PUT("/:userId", controller.UpdateUser)
+			}
+
+			// photoRouter := apiRouter.Group("/photos")
+			// {
+			// 	photoRouter.Use(middleware.Authentication())
+			// 	photoRouter.POST("/", controller.PostPhoto)
+			// 	photoRouter.GET("/", controller.GetPhotos)
+			// 	photoRouter.Use(middleware.Authorization("photoId"))
+			// 	photoRouter.PUT("/:photoId", controller.UpdatePhoto)
+			// 	photoRouter.DELETE("/:photoId", controller.DeletePhoto)
+			// }
+		}
 	}
 
 	return r

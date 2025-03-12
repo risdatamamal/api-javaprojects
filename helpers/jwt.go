@@ -51,7 +51,6 @@ func VerifyToken(ctx *gin.Context) (interface{}, error) {
 	}
 
 	_, ok := token.Claims.(jwt.MapClaims)
-
 	if !ok || !token.Valid {
 		return nil, errors.New("failed to claims or token not valid")
 	}

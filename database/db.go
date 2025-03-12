@@ -29,7 +29,14 @@ func StartDB() error {
 	db.Debug().AutoMigrate(
 		models.User{},
 		models.Role{},
-	// models.Review{},
+		models.Header{},
+		models.Client{},
+		models.Service{},
+		models.Industry{},
+		models.About{},
+		models.Project{},
+		models.Review{},
+		models.Blog{},
 	)
 
 	models.SeedRoles(db)
