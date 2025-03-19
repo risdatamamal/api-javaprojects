@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -33,11 +34,13 @@ func LoadConfig() Config {
 		ServerPort: os.Getenv("SERVER_PORT"),
 		Host:       os.Getenv("HOST"),
 		Port:       port,
-		Username:   os.Getenv("USERNAME"),
-		Password:   os.Getenv("PASSWORD"),
+		Username:   os.Getenv("DB_USERNAME"),
+		Password:   os.Getenv("DB_PASSWORD"),
 		DBName:     os.Getenv("DB_NAME"),
 		SecretKey:  os.Getenv("SECRET_KEY"),
 	}
+
+	fmt.Println("Username:", configs.Username)
 
 	return configs
 }

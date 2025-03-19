@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/risdatamamal/api-javaprojects/config"
-	"github.com/risdatamamal/api-javaprojects/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -17,7 +16,7 @@ var (
 
 func StartDB() error {
 	conf := config.LoadConfig()
-	conn := fmt.Sprintf("host=%s  user=%s password=%s dbname=%s port=%d sslmode=disable", conf.Host, conf.Username, conf.Password, conf.DBName, conf.Port)
+	conn := fmt.Sprintf("host=%s  user=%s password=%s dbname=%s port=%d sslmode=require", conf.Host, conf.Username, conf.Password, conf.DBName, conf.Port)
 	db, err = gorm.Open(postgres.Open(conn), &gorm.Config{})
 
 	if err != nil {
@@ -26,20 +25,21 @@ func StartDB() error {
 
 	fmt.Println("Successfully Connected to Database: ", conf.DBName)
 
-	db.Debug().AutoMigrate(
-		models.User{},
-		models.Role{},
-		models.Header{},
-		models.Client{},
-		models.Service{},
-		models.Industry{},
-		models.About{},
-		models.Project{},
-		models.Review{},
-		models.Blog{},
-	)
+	// db.Debug().AutoMigrate(
+	// 	models.User{},
+	// 	models.Role{},
+	// 	models.Header{},
+	// 	models.Client{},
+	// 	models.Service{},
+	// 	models.Industry{},
+	// 	models.About{},
+	// 	models.Project{},
+	// 	models.Review{},
+	// 	models.Blog{},
+	// )
 
-	models.SeedRoles(db)
+	// models.SeedRoles(db)
+	// models.SeedHeaders(db)
 
 	return nil
 }

@@ -15,14 +15,26 @@ type GormModel struct {
 func (g *GormModel) BeforeCreate(tx *gorm.DB) (err error) {
 	location, _ := time.LoadLocation("Asia/Jakarta")
 	now := time.Now().In(location)
-	g.CreatedAt = &now
-	g.UpdatedAt = &now
+	currentDateTime, err := time.Parse(time.RFC3339, now.Format(time.RFC3339))
+
+	if err != nil {
+		return err
+	}
+
+	g.CreatedAt = &currentDateTime
+	g.UpdatedAt = &currentDateTime
 	return nil
 }
 
 func (g *GormModel) BeforeUpdate(tx *gorm.DB) (err error) {
 	location, _ := time.LoadLocation("Asia/Jakarta")
 	now := time.Now().In(location)
-	g.UpdatedAt = &now
+	currentDateTime, err := time.Parse(time.RFC3339, now.Format(time.RFC3339))
+
+	if err != nil {
+		return err
+	}
+
+	g.UpdatedAt = &currentDateTime
 	return nil
 }

@@ -13,6 +13,12 @@ type Role struct {
 	GuardName string `gorm:"not null" json:"guard_name" form:"guard_name" valid:"required~Guard name is required"`
 }
 
+type GetAllRolesResponse struct {
+	GormModel
+	RoleName  string `json:"role_name"`
+	GuardName string `json:"guard_name"`
+}
+
 func (r *Role) BeforeCreate(tx *gorm.DB) error {
 	_, err := govalidator.ValidateStruct(r)
 	if err != nil {
